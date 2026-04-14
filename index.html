@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>คำนวณเงินเดือน & OT (Manual Select)</title>
+    <title>คำนวณเงินเดือน & วันหยุดไทย 2569</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,6 +15,8 @@
             --sunday-text: #be123c;
             --saturday: #f0fdf4;
             --saturday-text: #15803d;
+            --holiday: #fffbeb;
+            --holiday-text: #b45309;
             --border: #e2e8f0;
         }
 
@@ -62,18 +64,6 @@
             outline: none;
         }
 
-        input:focus { border-color: var(--accent); }
-
-        .info-panel {
-            background: #f1f5f9;
-            padding: 8px;
-            border-radius: 8px;
-            margin-top: 10px;
-            font-size: 0.7rem;
-            color: #64748b;
-            text-align: center;
-        }
-
         .table-card {
             background: var(--card);
             border-radius: 12px;
@@ -84,15 +74,19 @@
 
         table { width: 100%; border-collapse: collapse; }
 
-        th { background: #f8fafc; padding: 10px 4px; border-bottom: 2px solid var(--border); font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; }
+        th { background: #f8fafc; padding: 10px 4px; border-bottom: 2px solid var(--border); font-size: 0.7rem; color: #94a3b8; }
 
-        td { padding: 6px 2px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; text-align: center; }
+        td { padding: 8px 2px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; text-align: center; vertical-align: middle; }
 
+        /* การตกแต่งแถวตามวัน */
         tr.sunday { background-color: var(--sunday); }
         tr.sunday td:nth-child(2) { color: var(--sunday-text); font-weight: bold; }
         
         tr.saturday { background-color: var(--saturday); }
         tr.saturday td:nth-child(2) { color: var(--saturday-text); font-weight: bold; }
+
+        tr.is-holiday { background-color: var(--holiday); }
+        .holiday-name { display: block; font-size: 0.65rem; color: var(--holiday-text); font-weight: 600; margin-top: 2px; line-height: 1; }
 
         .table-select {
             padding: 5px 2px;
@@ -101,10 +95,8 @@
             border-radius: 6px;
             width: 95%;
             cursor: pointer;
-            color: #1e293b;
         }
 
-        /* เน้นสีเมื่อมีการเลือกค่าที่ไม่ใช่ 0 */
         .table-select.active {
             border-color: var(--accent);
             background-color: #f0f9ff;
@@ -115,12 +107,9 @@
         .row-extra { font-weight: 700; color: #94a3b8; font-size: 0.8rem; }
         .row-extra.has-value { color: var(--accent); }
 
-        /* Fixed Footer */
         .footer-summary {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 0; left: 0; right: 0;
             background: var(--primary);
             color: white;
             padding: 15px 20px;
@@ -131,17 +120,14 @@
             z-index: 1000;
         }
 
-        .summary-main { text-align: left; }
-        .summary-label { font-size: 0.7rem; opacity: 0.7; display: block; margin-bottom: 2px; }
         .summary-value { font-size: 1.3rem; font-weight: 700; color: #38bdf8; }
-        .extra-label { font-size: 0.9rem; font-weight: 600; color: #94a3b8; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header-card">
-        <h2>💰 คำนวณรายรับรายเดือน</h2>
+        <h2>💰 รายรับ & วันหยุดไทย 2569</h2>
         <div class="config-grid">
             <div class="form-group">
                 <label>เงินเดือนพื้นฐาน</label>
@@ -152,9 +138,6 @@
                 <input type="month" id="monthPicker" onchange="generateTable()">
             </div>
         </div>
-        <div class="info-panel">
-            <b>มาตรฐาน:</b> หาร 30 แล้วหาร 8 | ปกติ 8.75 ชม. | OT 2 ชม.
-        </div>
     </div>
 
     <div class="table-card">
@@ -162,8 +145,8 @@
             <thead>
                 <tr>
                     <th style="width:12%">วันที่</th>
-                    <th style="width:12%">วัน</th>
-                    <th style="width:38%">งานปกติ</th>
+                    <th style="width:20%">วัน</th>
+                    <th style="width:30%">งานปกติ</th>
                     <th style="width:20%">OT</th>
                     <th style="width:18%">+บาท</th>
                 </tr>
@@ -174,23 +157,45 @@
 </div>
 
 <div class="footer-summary">
-    <div class="summary-main">
-        <span class="summary-label">รายรับสุทธิรวม</span>
-        <span id="grandTotal" class="summary-value">20,000.00</span>
+    <div style="text-align:left;">
+        <span style="font-size:0.7rem; opacity:0.7; display:block;">รายรับสุทธิ</span>
+        <span id="grandTotal" class="summary-value">0.00</span>
     </div>
-    <div style="text-align: right;">
-        <span class="summary-label">ยอดพิเศษเดือนนี้</span>
-        <span id="displayExtra" class="extra-label">+ 0.00</span>
+    <div style="text-align:right;">
+        <span style="font-size:0.7rem; opacity:0.7; display:block;">เงินพิเศษสะสม</span>
+        <span id="displayExtra" style="font-weight:600; color:#94a3b8;">+ 0.00</span>
     </div>
 </div>
 
 <script>
-    const daysTh = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
-    const WORK_HOURS = 8.75; // ทำงานจริง 07:40 - 17:25
-    const OT_HOURS = 2;      // OT 17:50 - 19:50
-    const DIVISOR = 8;       // ฐานหารตามที่สั่ง
+    // ฐานข้อมูลวันหยุดไทย ปี 2569 (2026)
+    const holidays2026 = {
+        "01-01": "วันขึ้นปีใหม่",
+        "03-02": "วันมาฆบูชา",
+        "04-06": "วันจักรี",
+        "04-13": "วันสงกรานต์",
+        "04-14": "วันสงกรานต์",
+        "04-15": "วันสงกรานต์",
+        "05-01": "วันแรงงาน",
+        "05-04": "วันฉัตรมงคล",
+        "05-31": "วันวิสาขบูชา",
+        "06-03": "วันเฉลิมพระชนมพรรษาพระราชินี",
+        "07-28": "วันเฉลิมพระชนมพรรษา ร.10",
+        "07-29": "วันอาสาฬหบูชา",
+        "07-30": "วันเข้าพรรษา",
+        "08-12": "วันแม่แห่งชาติ",
+        "10-13": "วันคล้ายวันสวรรคต ร.9",
+        "10-23": "วันปิยมหาราช",
+        "12-05": "วันพ่อแห่งชาติ",
+        "12-10": "วันรัฐธรรมนูญ",
+        "12-31": "วันสิ้นปี"
+    };
 
-    // Set ปัจจุบัน
+    const daysTh = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+    const WORK_HOURS = 8.75;
+    const OT_HOURS = 2;
+    const DIVISOR = 8;
+
     document.getElementById('monthPicker').value = new Date().toISOString().substring(0, 7);
 
     function generateTable() {
@@ -203,18 +208,24 @@
         for (let d = 1; d <= daysInMonth; d++) {
             const dateObj = new Date(year, month - 1, d);
             const dayIdx = dateObj.getDay();
-            
+            const dateKey = `${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const holidayName = (year === 2026) ? holidays2026[dateKey] : null;
+
             const tr = document.createElement('tr');
             if (dayIdx === 0) tr.className = 'sunday';
             if (dayIdx === 6) tr.className = 'saturday';
+            if (holidayName) tr.classList.add('is-holiday');
 
             tr.innerHTML = `
                 <td>${d}</td>
-                <td>${daysTh[dayIdx]}</td>
+                <td>
+                    ${daysTh[dayIdx]}
+                    ${holidayName ? `<span class="holiday-name">${holidayName}</span>` : ''}
+                </td>
                 <td>
                     <select class="table-select work-rate" onchange="calculateTotal(this)">
-                        <option value="0" selected>วันทำงานปกติ</option>
-                        <option value="1">พิเศษ (+1 แรง)</option>
+                        <option value="0" selected>ปกติ</option>
+                        <option value="1">+1 แรง</option>
                         <option value="1.5">+1.5 แรง</option>
                         <option value="2">+2 แรง</option>
                         <option value="3">+3 แรง</option>
@@ -237,31 +248,21 @@
     }
 
     function calculateTotal(el) {
-        // จัดการเรื่องสี Highlight เมื่อเลือกค่า
         if (el) {
-            if (el.value != "0") {
-                el.classList.add('active');
-            } else {
-                el.classList.remove('active');
-            }
+            el.classList.toggle('active', el.value !== "0");
         }
 
         const salary = parseFloat(document.getElementById('baseSalary').value) || 0;
         const hourlyRate = (salary / 30) / DIVISOR;
-
         const rows = document.querySelectorAll('#tableBody tr');
         let totalExtra = 0;
 
         rows.forEach(row => {
             const wMult = parseFloat(row.querySelector('.work-rate').value);
             const oMult = parseFloat(row.querySelector('.ot-rate').value);
+            const sum = (WORK_HOURS * hourlyRate * wMult) + (OT_HOURS * hourlyRate * oMult);
             
-            const extraW = WORK_HOURS * hourlyRate * wMult;
-            const extraO = OT_HOURS * hourlyRate * oMult;
-            
-            const sum = extraW + extraO;
             const extraCell = row.querySelector('.row-extra');
-            
             if (sum > 0) {
                 extraCell.innerText = Math.round(sum).toLocaleString();
                 extraCell.classList.add('has-value');
@@ -269,13 +270,11 @@
                 extraCell.innerText = "0";
                 extraCell.classList.remove('has-value');
             }
-            
             totalExtra += sum;
         });
 
-        const final = salary + totalExtra;
         document.getElementById('displayExtra').innerText = "+ " + totalExtra.toLocaleString(undefined, {minimumFractionDigits: 2});
-        document.getElementById('grandTotal').innerText = final.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('grandTotal').innerText = (salary + totalExtra).toLocaleString(undefined, {minimumFractionDigits: 2});
     }
 
     generateTable();
