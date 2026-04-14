@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>คำนวณเงินเดือน & OT</title>
+    <title>คำนวณเงินเดือน & OT (Mobile Friendly)</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,9 +13,11 @@
             --card: #ffffff;
             --sunday: #fff1f2;
             --sunday-text: #be123c;
+            --saturday: #f0fdf4;
+            --saturday-text: #15803d;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Sarabun', sans-serif;
@@ -27,7 +29,7 @@
             justify-content: center;
         }
 
-        .container { width: 100%; max-width: 600px; } /* บีบความกว้างให้พอดีมือถือ */
+        .container { width: 100%; max-width: 500px; }
 
         .header-card {
             background: var(--card);
@@ -38,33 +40,35 @@
             border-top: 4px solid var(--accent);
         }
 
-        h2 { margin: 0 0 15px 0; font-size: 1.2rem; text-align: center; }
+        h2 { margin: 0 0 10px 0; font-size: 1.1rem; text-align: center; color: var(--primary); }
 
         .config-grid {
             display: grid;
-            grid-template-columns: 1fr; /* บนมือถือเรียงแถวเดียว */
-            gap: 12px;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
 
         .form-group { display: flex; flex-direction: column; gap: 4px; }
-        label { font-size: 0.8rem; font-weight: 700; color: #64748b; }
+        label { font-size: 0.75rem; font-weight: 700; color: #64748b; }
         
         input, select {
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             width: 100%;
+            background-color: white;
         }
 
         .info-panel {
-            background: #f0f9ff;
-            padding: 10px;
+            background: #f8fafc;
+            padding: 8px;
             border-radius: 8px;
-            margin-top: 12px;
-            font-size: 0.75rem;
-            line-height: 1.4;
-            border: 1px solid #bae6fd;
+            margin-top: 10px;
+            font-size: 0.7rem;
+            color: #64748b;
+            border: 1px dashed #cbd5e1;
+            text-align: center;
         }
 
         .table-card {
@@ -72,30 +76,32 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 80px; /* เว้นที่ให้ Footer */
+            margin-bottom: 90px;
         }
 
-        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
 
-        table { width: 100%; border-collapse: collapse; min-width: 350px; } /* ลด min-width */
+        th { background: #f8fafc; padding: 10px 4px; border-bottom: 2px solid #e2e8f0; font-size: 0.7rem; color: #94a3b8; }
 
-        th { background: #f8fafc; padding: 10px 5px; border-bottom: 2px solid #e2e8f0; font-size: 0.75rem; }
-
-        td { padding: 8px 4px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; text-align: center; }
+        td { padding: 6px 2px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; text-align: center; }
 
         tr.sunday { background-color: var(--sunday); }
         tr.sunday td:nth-child(2) { color: var(--sunday-text); font-weight: bold; }
+        
+        tr.saturday { background-color: var(--saturday); }
+        tr.saturday td:nth-child(2) { color: var(--saturday-text); font-weight: bold; }
 
-        select.table-select {
-            padding: 4px;
+        .table-select {
+            padding: 4px 2px;
             font-size: 0.8rem;
-            width: 100%;
-            max-width: 90px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            width: 95%;
         }
 
-        .row-extra { font-weight: 700; color: #0369a1; font-size: 0.8rem; }
+        .row-extra { font-weight: 700; color: var(--accent); font-size: 0.8rem; }
 
-        /* Fixed Footer สำหรับมือถือ */
+        /* Footer สรุปผล */
         .footer-summary {
             position: fixed;
             bottom: 0;
@@ -103,22 +109,18 @@
             right: 0;
             background: var(--primary);
             color: white;
-            padding: 12px 20px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
-            z-index: 100;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
         }
 
-        .summary-item { text-align: left; }
-        .summary-label { font-size: 0.7rem; opacity: 0.8; display: block; }
-        .summary-value { font-size: 1.1rem; font-weight: 700; color: #38bdf8; }
-
-        @media (min-width: 600px) {
-            .config-grid { grid-template-columns: 1fr 1fr; }
-            .container { padding: 20px; }
-        }
+        .summary-main { text-align: left; }
+        .summary-label { font-size: 0.7rem; opacity: 0.7; display: block; margin-bottom: 2px; }
+        .summary-value { font-size: 1.2rem; font-weight: 700; color: #38bdf8; }
+        .extra-label { font-size: 0.85rem; font-weight: 600; color: #94a3b8; }
     </style>
 </head>
 <body>
@@ -132,50 +134,47 @@
                 <input type="number" id="baseSalary" value="20000" oninput="calculateTotal()">
             </div>
             <div class="form-group">
-                <label>เดือนที่คำนวณ</label>
+                <label>เดือน</label>
                 <input type="month" id="monthPicker" onchange="generateTable()">
             </div>
         </div>
         <div class="info-panel">
-            <b>สูตร:</b> (เงินเดือน/30)/8 <br>
-            <b>เวลา:</b> ปกติ 8.75 ชม. | OT 2 ชม.
+            ฐาน (เงินเดือน/30)/8 | ปกติ 8.75 ชม. | OT 2 ชม.
         </div>
     </div>
 
     <div class="table-card">
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 40px;">วันที่</th>
-                        <th>วัน</th>
-                        <th>งานปกติ</th>
-                        <th>OT</th>
-                        <th>เพิ่ม(฿)</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:12%">วันที่</th>
+                    <th style="width:12%">วัน</th>
+                    <th style="width:38%">งานปกติ</th>
+                    <th style="width:20%">OT</th>
+                    <th style="width:18%">+บาท</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
     </div>
 </div>
 
 <div class="footer-summary">
-    <div class="summary-item">
-        <span class="summary-label">เงินเดือน + พิเศษ</span>
+    <div class="summary-main">
+        <span class="summary-label">รวมรับสุทธิเดือนนี้</span>
         <span id="grandTotal" class="summary-value">0.00</span>
     </div>
     <div style="text-align: right;">
-        <span class="summary-label">ยอดพิเศษเดือนนี้</span>
-        <span id="displayExtra" style="font-weight: bold;">+ 0.00</span>
+        <span class="summary-label">เฉพาะเงินพิเศษ</span>
+        <span id="displayExtra" class="extra-label">+ 0.00</span>
     </div>
 </div>
 
 <script>
     const daysTh = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
-    const WORK_HOURS_ACTUAL = 8.75;
-    const OT_HOURS_ACTUAL = 2;
-    const BASE_DIVISOR_HOURS = 8;
+    const WORK_HOURS = 8.75;
+    const OT_HOURS = 2;
+    const DIVISOR = 8;
 
     document.getElementById('monthPicker').value = new Date().toISOString().substring(0, 7);
 
@@ -188,19 +187,21 @@
 
         for (let d = 1; d <= daysInMonth; d++) {
             const dateObj = new Date(year, month - 1, d);
-            const dayName = daysTh[dateObj.getDay()];
-            const isSunday = dateObj.getDay() === 0;
-
+            const dayIdx = dateObj.getDay();
+            const dayName = daysTh[dayIdx];
+            
             const tr = document.createElement('tr');
-            if (isSunday) tr.className = 'sunday';
+            if (dayIdx === 0) tr.className = 'sunday';
+            if (dayIdx === 6) tr.className = 'saturday';
 
             tr.innerHTML = `
                 <td>${d}</td>
                 <td>${dayName}</td>
                 <td>
                     <select class="table-select work-rate" onchange="calculateTotal()">
-                        <option value="0">ปกติ</option>
-                        <option value="1">+1 แรง</option>
+                        <option value="0">วันปกติ (0)</option>
+                        <option value="1">พิเศษ (+1 แรง)</option>
+                        <option value="1.5">+1.5 แรง</option>
                         <option value="2">+2 แรง</option>
                         <option value="3">+3 แรง</option>
                     </select>
@@ -209,12 +210,12 @@
                     <select class="table-select ot-rate" onchange="calculateTotal()">
                         <option value="0">0</option>
                         <option value="1">1x</option>
-                        <option value="1.5" selected>1.5x</option>
+                        <option value="1.5">1.5x</option>
                         <option value="2">2x</option>
                         <option value="3">3x</option>
                     </select>
                 </td>
-                <td class="row-extra">0.00</td>
+                <td class="row-extra">0</td>
             `;
             tbody.appendChild(tr);
         }
@@ -222,28 +223,29 @@
     }
 
     function calculateTotal() {
-        const baseSalary = parseFloat(document.getElementById('baseSalary').value) || 0;
-        const hourlyRate = (baseSalary / 30) / BASE_DIVISOR_HOURS;
+        const salary = parseFloat(document.getElementById('baseSalary').value) || 0;
+        const hourlyRate = (salary / 30) / DIVISOR;
 
         const rows = document.querySelectorAll('#tableBody tr');
         let totalExtra = 0;
 
         rows.forEach(row => {
-            const workMult = parseFloat(row.querySelector('.work-rate').value);
-            const otMult = parseFloat(row.querySelector('.ot-rate').value);
+            const wMult = parseFloat(row.querySelector('.work-rate').value);
+            const oMult = parseFloat(row.querySelector('.ot-rate').value);
             
-            const extraWork = WORK_HOURS_ACTUAL * hourlyRate * workMult;
-            const extraOT = OT_HOURS_ACTUAL * hourlyRate * otMult;
+            // คำนวณเงินเพิ่มจากงานปกติ (ถ้าเลือก 1 แรง ก็บวกเพิ่ม 8.75 ชม.)
+            const extraW = WORK_HOURS * hourlyRate * wMult;
+            // คำนวณเงินจาก OT
+            const extraO = OT_HOURS * hourlyRate * oMult;
             
-            const dayExtra = extraWork + extraOT;
-            row.querySelector('.row-extra').innerText = dayExtra.toFixed(0); // ปัดเศษโชว์ในตารางให้ดูสะอาด
-            totalExtra += dayExtra;
+            const sum = extraW + extraO;
+            row.querySelector('.row-extra').innerText = Math.round(sum).toLocaleString();
+            totalExtra += sum;
         });
 
-        const grandTotal = baseSalary + totalExtra;
-
+        const final = salary + totalExtra;
         document.getElementById('displayExtra').innerText = "+ " + totalExtra.toLocaleString(undefined, {minimumFractionDigits: 2});
-        document.getElementById('grandTotal').innerText = grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2});
+        document.getElementById('grandTotal').innerText = final.toLocaleString(undefined, {minimumFractionDigits: 2});
     }
 
     generateTable();
