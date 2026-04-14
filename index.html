@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบคำนวณเงินเดือนสุทธิ (8 ชม. 45 นาที)</title>
+    <title>ระบบคำนวณเงินเดือน & OT (Base 8 Hours)</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1e293b;
-            --accent: #0284c7;
-            --bg: #f1f5f9;
+            --primary: #0f172a;
+            --accent: #0ea5e9;
+            --bg: #f8fafc;
             --card: #ffffff;
             --sunday: #fff1f2;
             --sunday-text: #be123c;
@@ -27,102 +27,109 @@
 
         .header-card {
             background: var(--card);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            margin-bottom: 15px;
-            border-top: 5px solid var(--accent);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border-top: 6px solid var(--accent);
         }
 
         .config-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
         }
 
-        .form-group { display: flex; flex-direction: column; gap: 5px; }
-        label { font-size: 0.85rem; font-weight: 600; color: #64748b; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 0.9rem; font-weight: 700; color: #475569; }
         
         input {
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            color: var(--primary);
         }
 
-        .info-bar {
-            background: #f8fafc;
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 0.85rem;
+        .info-panel {
+            background: #f0f9ff;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
             display: flex;
-            justify-content: space-around;
-            border: 1px dashed #cbd5e1;
+            flex-wrap: wrap;
+            gap: 20px;
+            border: 1px solid #bae6fd;
+            font-size: 0.9rem;
         }
 
         .table-card {
             background: var(--card);
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         }
 
         .table-responsive { overflow-x: auto; }
 
         table { width: 100%; border-collapse: collapse; text-align: center; min-width: 800px; }
 
-        th { background: #f8fafc; padding: 12px; border-bottom: 2px solid #e2e8f0; font-size: 0.85rem; }
+        th { background: #f8fafc; padding: 15px; border-bottom: 2px solid #e2e8f0; font-size: 0.85rem; color: #64748b; }
 
-        td { padding: 10px; border-bottom: 1px solid #f1f5f9; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
 
         tr.sunday { background-color: var(--sunday); }
         tr.sunday td:nth-child(2) { color: var(--sunday-text); font-weight: bold; }
 
         select {
-            padding: 6px;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-size: 0.9rem;
         }
+
+        .row-extra { font-weight: 700; color: #0369a1; }
 
         .footer-summary {
             background: var(--primary);
             color: white;
-            padding: 20px;
+            padding: 25px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
-            border-radius: 0 0 12px 12px;
+            border-radius: 0 0 16px 16px;
         }
 
-        .summary-label { display: block; font-size: 0.8rem; opacity: 0.8; margin-bottom: 5px; }
-        .summary-value { font-size: 1.2rem; font-weight: 700; }
-        .highlight { color: #38bdf8; font-size: 1.6rem; }
+        .summary-item { display: flex; flex-direction: column; }
+        .summary-label { font-size: 0.85rem; opacity: 0.7; margin-bottom: 5px; }
+        .summary-value { font-size: 1.3rem; font-weight: 700; }
+        .highlight { color: #38bdf8; font-size: 1.8rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header-card">
-        <h2 style="margin:0 0 15px 0;">📊 โปรแกรมคำนวณเงินเดือน + OT</h2>
+        <h2 style="margin:0 0 20px 0;">💰 คำนวณรายได้สุทธิ (ฐานหาร 8)</h2>
         <div class="config-grid">
             <div class="form-group">
                 <label>เงินเดือนพื้นฐาน (บาท)</label>
                 <input type="number" id="baseSalary" value="20000" oninput="calculateTotal()">
             </div>
             <div class="form-group">
-                <label>เลือกเดือน</label>
+                <label>เลือกเดือนที่ต้องการ</label>
                 <input type="month" id="monthPicker" onchange="generateTable()">
             </div>
             <div class="form-group">
-                <label>ฐานค่าจ้าง (บาท/ชม.)</label>
-                <input type="text" id="hourlyRateDisplay" disabled style="background:#f1f5f9; font-weight:bold;">
+                <label>ค่าจ้างต่อชั่วโมง (บาท)</label>
+                <input type="text" id="hourlyRateDisplay" disabled style="background:#f1f5f9; border:none; font-weight:bold;">
             </div>
         </div>
-        <div class="info-bar">
-            <span>🕒 งานปกติ: <b>8 ชม. 45 นาที</b></span>
-            <span>🕒 OT: <b>2 ชม.</b></span>
+        <div class="info-panel">
+            <span>🔹 <b>สูตรคำนวณ:</b> (เงินเดือน / 30) / 8</span>
+            <span>🔹 <b>ชั่วโมงงานปกติ:</b> 8.75 ชม. (07:40 - 17:25)</span>
+            <span>🔹 <b>ชั่วโมง OT:</b> 2.00 ชม. (17:50 - 19:50)</span>
         </div>
     </div>
 
@@ -133,9 +140,9 @@
                     <tr>
                         <th>วันที่</th>
                         <th>วัน</th>
-                        <th>การทำงานปกติ</th>
-                        <th>การทำ OT</th>
-                        <th>เงินพิเศษเพิ่ม (บาท)</th>
+                        <th>ค่าแรงพิเศษ (บวกเพิ่ม)</th>
+                        <th>ค่า OT (บวกเพิ่ม)</th>
+                        <th>ยอดรวมพิเศษ (บาท)</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
@@ -143,27 +150,27 @@
         </div>
         
         <div class="footer-summary">
-            <div>
-                <span class="summary-label">เงินเดือนพื้นฐานคงที่:</span>
-                <span id="displayBase" class="summary-value">0.00</span> บาท
+            <div class="summary-item">
+                <span class="summary-label">เงินเดือนพื้นฐาน:</span>
+                <span id="displayBase" class="summary-value">0.00</span>
             </div>
-            <div>
-                <span class="summary-label">เงินพิเศษ/OT สะสม:</span>
-                <span id="displayExtra" class="summary-value" style="color:#38bdf8;">+ 0.00</span> บาท
+            <div class="summary-item">
+                <span class="summary-label">รวมเงินพิเศษ + OT:</span>
+                <span id="displayExtra" class="summary-value" style="color:#38bdf8;">+ 0.00</span>
             </div>
-            <div>
-                <span class="summary-label">รายรับสุทธิเดือนนี้:</span>
-                <span id="grandTotal" class="summary-value highlight">0.00</span> บาท
+            <div class="summary-item">
+                <span class="summary-label">รายรับสุทธิทั้งสิ้น:</span>
+                <span id="grandTotal" class="summary-value highlight">0.00</span>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // ตั้งค่าเบื้องต้น
     const daysTh = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
-    const NORMAL_HOURS = 8.75; // 8 ชม. 45 นาที (45/60 = 0.75)
-    const OT_HOURS = 2;
+    const WORK_HOURS_ACTUAL = 8.75; // เวลาทำงานจริง
+    const OT_HOURS_ACTUAL = 2;      // เวลา OT จริง
+    const BASE_DIVISOR_HOURS = 8;   // ฐานชั่วโมงที่ใช้หารตามกฎหมาย
 
     document.getElementById('monthPicker').value = new Date().toISOString().substring(0, 7);
 
@@ -187,10 +194,11 @@
                 <td>${dayName}</td>
                 <td>
                     <select class="work-rate" onchange="calculateTotal()">
-                        <option value="0" selected>วันทำงานปกติ (ไม่บวกเพิ่ม)</option>
-                        <option value="1">ทำงานวันหยุด (บวก 1 แรง)</option>
-                        <option value="2">ทำงานวันหยุด (บวก 2 แรง)</option>
-                        <option value="3">ทำงานวันหยุด (บวก 3 แรง)</option>
+                        <option value="0" selected>วันทำงานปกติ</option>
+                        <option value="1">วันหยุด (บวก 1 แรง)</option>
+                        <option value="1.5">วันหยุด (บวก 1.5 แรง)</option>
+                        <option value="2">วันหยุด (บวก 2 แรง)</option>
+                        <option value="3">วันหยุด (บวก 3 แรง)</option>
                     </select>
                 </td>
                 <td>
@@ -202,7 +210,7 @@
                         <option value="3">OT 3 เท่า</option>
                     </select>
                 </td>
-                <td style="font-weight:bold; color:#0284c7;" class="row-extra">0.00</td>
+                <td class="row-extra">0.00</td>
             `;
             tbody.appendChild(tr);
         }
@@ -212,9 +220,11 @@
     function calculateTotal() {
         const baseSalary = parseFloat(document.getElementById('baseSalary').value) || 0;
         
-        // คำนวณฐานต่อชั่วโมง (เงินเดือน / 30 วัน / 8.75 ชม.)
-        const hourlyRate = (baseSalary / 30) / NORMAL_HOURS;
-        document.getElementById('hourlyRateDisplay').value = hourlyRate.toFixed(2);
+        // --- สูตรที่แก้ไข: หาร 30 แล้วหาร 8 ---
+        const dailyRate = baseSalary / 30;
+        const hourlyRate = dailyRate / BASE_DIVISOR_HOURS;
+        
+        document.getElementById('hourlyRateDisplay').value = hourlyRate.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
         const rows = document.querySelectorAll('#tableBody tr');
         let totalExtra = 0;
@@ -223,11 +233,11 @@
             const workMult = parseFloat(row.querySelector('.work-rate').value);
             const otMult = parseFloat(row.querySelector('.ot-rate').value);
             
-            // คำนวณเงินเพิ่ม:
-            // เงินพิเศษวันหยุด = ชม.ปกติ(8.75) * ฐานรายชม. * ตัวคูณ
-            const extraWork = NORMAL_HOURS * hourlyRate * workMult;
-            // เงิน OT = ชม.OT(2) * ฐานรายชม. * ตัวคูณ
-            const extraOT = OT_HOURS * hourlyRate * otMult;
+            // คำนวณเงินพิเศษวันหยุด: ใช้ชั่วโมงทำงานจริง (8.75) คูณฐานชั่วโมงที่ได้ (hourlyRate)
+            const extraWork = WORK_HOURS_ACTUAL * hourlyRate * workMult;
+            
+            // คำนวณ OT: ใช้ชั่วโมง OT จริง (2) คูณฐานชั่วโมงที่ได้ คูณตัวคูณ OT
+            const extraOT = OT_HOURS_ACTUAL * hourlyRate * otMult;
             
             const dayExtra = extraWork + extraOT;
             row.querySelector('.row-extra').innerText = dayExtra.toLocaleString(undefined, {minimumFractionDigits: 2});
