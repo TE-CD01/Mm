@@ -3,282 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>คำนวณเงินเดือน & วันหยุดไทย 2569</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Salary & All OT Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #0f172a;
-            --accent: #0ea5e9;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --sunday: #fff1f2;
-            --sunday-text: #be123c;
-            --saturday: #f0fdf4;
-            --saturday-text: #15803d;
-            --holiday: #fffbeb;
-            --holiday-text: #b45309;
-            --border: #e2e8f0;
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: 'Sarabun', sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            padding: 10px;
-            color: #334155;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container { width: 100%; max-width: 500px; }
-
-        .header-card {
-            background: var(--card);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            margin-bottom: 12px;
-            border-top: 4px solid var(--accent);
-        }
-
-        h2 { margin: 0 0 10px 0; font-size: 1.1rem; text-align: center; color: var(--primary); }
-
-        .config-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .form-group { display: flex; flex-direction: column; gap: 4px; }
-        label { font-size: 0.75rem; font-weight: 700; color: #64748b; }
-        
-        input, select {
-            padding: 8px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            width: 100%;
-            background-color: white;
-            outline: none;
-        }
-
-        .table-card {
-            background: var(--card);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 100px;
-        }
-
-        table { width: 100%; border-collapse: collapse; }
-
-        th { background: #f8fafc; padding: 10px 4px; border-bottom: 2px solid var(--border); font-size: 0.7rem; color: #94a3b8; }
-
-        td { padding: 8px 2px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; text-align: center; vertical-align: middle; }
-
-        /* การตกแต่งแถวตามวัน */
-        tr.sunday { background-color: var(--sunday); }
-        tr.sunday td:nth-child(2) { color: var(--sunday-text); font-weight: bold; }
-        
-        tr.saturday { background-color: var(--saturday); }
-        tr.saturday td:nth-child(2) { color: var(--saturday-text); font-weight: bold; }
-
-        tr.is-holiday { background-color: var(--holiday); }
-        .holiday-name { display: block; font-size: 0.65rem; color: var(--holiday-text); font-weight: 600; margin-top: 2px; line-height: 1; }
-
-        .table-select {
-            padding: 5px 2px;
-            font-size: 0.8rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            width: 95%;
-            cursor: pointer;
-        }
-
-        .table-select.active {
-            border-color: var(--accent);
-            background-color: #f0f9ff;
-            font-weight: bold;
-            color: var(--accent);
-        }
-
-        .row-extra { font-weight: 700; color: #94a3b8; font-size: 0.8rem; }
-        .row-extra.has-value { color: var(--accent); }
-
-        .footer-summary {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: var(--primary);
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
-            z-index: 1000;
-        }
-
-        .summary-value { font-size: 1.3rem; font-weight: 700; color: #38bdf8; }
+        body { font-family: 'Kanit', sans-serif; background-color: #f1f5f9; }
+        .input-box:focus { border-color: #3b82f6; ring: 2px; ring-color: #eff6ff; outline: none; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body>
+<body class="py-10 px-4">
 
-<div class="container">
-    <div class="header-card">
-        <h2>💰 รายรับ & วันหยุดไทย 2569</h2>
-        <div class="config-grid">
-            <div class="form-group">
-                <label>เงินเดือนพื้นฐาน</label>
-                <input type="number" id="baseSalary" value="20000" oninput="calculateTotal()">
+    <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-slate-800">ระบบคำนวณเงินเดือนสุทธิ (Full OT)</h1>
+            <p class="text-slate-500 mt-2">ระบุจำนวนชั่วโมงแยกตามประเภทค่าตอบแทน</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- ส่วนกรอกข้อมูล (Left) -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- รายได้หลัก -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-semibold mb-4 text-blue-600 flex items-center">
+                        <span class="mr-2">💵</span> รายได้และโบนัส
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-slate-600 mb-1">เงินเดือนพื้นฐาน</label>
+                            <input type="number" id="baseSalary" class="w-full p-3 bg-slate-50 border rounded-xl input-box transition" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-600 mb-1">โบนัส / รายได้อื่นๆ</label>
+                            <input type="number" id="bonus" class="w-full p-3 bg-slate-50 border rounded-xl input-box transition" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ส่วน OT แยกช่อง -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-semibold mb-4 text-orange-600 flex items-center">
+                        <span class="mr-2">⏱️</span> จำนวนชั่วโมง OT (แยกประเภท)
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm text-slate-600 mb-1 font-medium text-blue-500">OT 1 เท่า (ชั่วโมง)</label>
+                            <input type="number" id="ot10" class="w-full p-3 bg-slate-50 border-2 border-blue-100 rounded-xl input-box transition" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-600 mb-1 font-medium text-orange-500">OT 1.5 เท่า (ชั่วโมง)</label>
+                            <input type="number" id="ot15" class="w-full p-3 bg-slate-50 border-2 border-orange-100 rounded-xl input-box transition" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-600 mb-1 font-medium text-green-600">OT 2 เท่า (ชั่วโมง)</label>
+                            <input type="number" id="ot20" class="w-full p-3 bg-slate-50 border-2 border-green-100 rounded-xl input-box transition" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-slate-600 mb-1 font-medium text-red-600">OT 3 เท่า (ชั่วโมง)</label>
+                            <input type="number" id="ot30" class="w-full p-3 bg-slate-50 border-2 border-red-100 rounded-xl input-box transition" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="calculate()" class="w-full py-4 bg-slate-800 hover:bg-black text-white font-bold rounded-2xl shadow-lg transition transform active:scale-[0.98]">
+                    คำนวณยอดเงินทั้งหมด
+                </button>
             </div>
-            <div class="form-group">
-                <label>เลือกเดือน</label>
-                <input type="month" id="monthPicker" onchange="generateTable()">
+
+            <!-- ส่วนแสดงผล (Right) -->
+            <div class="lg:col-span-5">
+                <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 sticky top-10">
+                    <h2 class="text-xl font-bold mb-6 text-slate-800">สรุปเงินได้สุทธิ</h2>
+                    
+                    <div class="space-y-4 text-sm border-b border-slate-100 pb-6">
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">เงินเดือนหลัก:</span>
+                            <span id="resBase" class="font-semibold text-slate-800">0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">OT 1.0 (ปกติ):</span>
+                            <span id="res10" class="font-semibold text-slate-700">0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500 text-orange-600 font-medium">OT 1.5 (ปกติ):</span>
+                            <span id="res15" class="font-semibold text-orange-600">0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500 text-green-600 font-medium">OT 2.0 (วันหยุด):</span>
+                            <span id="res20" class="font-semibold text-green-600">0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500 text-red-600 font-medium">OT 3.0 (วันหยุด):</span>
+                            <span id="res30" class="font-semibold text-red-600">0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">โบนัส/อื่นๆ:</span>
+                            <span id="resBonus" class="font-semibold text-slate-700">0.00</span>
+                        </div>
+                        <hr>
+                        <div class="flex justify-between text-red-500">
+                            <span>หักประกันสังคม (Max 750):</span>
+                            <span id="resSSO">- 0.00</span>
+                        </div>
+                        <div class="flex justify-between text-red-500">
+                            <span>หักภาษี (ประมาณการ):</span>
+                            <span id="resTax">- 0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-8">
+                        <p class="text-center text-slate-400 text-xs font-bold uppercase tracking-widest">Net Salary / เงินเดือนสุทธิ</p>
+                        <div class="flex justify-center items-baseline mt-2">
+                            <span id="resNet" class="text-5xl font-black text-blue-600">0.00</span>
+                            <span class="ml-2 text-xl font-bold text-blue-600">บาท</span>
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
 
-    <div class="table-card">
-        <table>
-            <thead>
-                <tr>
-                    <th style="width:12%">วันที่</th>
-                    <th style="width:20%">วัน</th>
-                    <th style="width:30%">งานปกติ</th>
-                    <th style="width:20%">OT</th>
-                    <th style="width:18%">+บาท</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-    </div>
-</div>
+    <script>
+        function calculate() {
+            // ดึงค่า Input
+            const base = parseFloat(document.getElementById('baseSalary').value) || 0;
+            const bonus = parseFloat(document.getElementById('bonus').value) || 0;
+            const h10 = parseFloat(document.getElementById('ot10').value) || 0;
+            const h15 = parseFloat(document.getElementById('ot15').value) || 0;
+            const h20 = parseFloat(document.getElementById('ot20').value) || 0;
+            const h30 = parseFloat(document.getElementById('ot30').value) || 0;
 
-<div class="footer-summary">
-    <div style="text-align:left;">
-        <span style="font-size:0.7rem; opacity:0.7; display:block;">รายรับสุทธิ</span>
-        <span id="grandTotal" class="summary-value">0.00</span>
-    </div>
-    <div style="text-align:right;">
-        <span style="font-size:0.7rem; opacity:0.7; display:block;">เงินพิเศษสะสม</span>
-        <span id="displayExtra" style="font-weight:600; color:#94a3b8;">+ 0.00</span>
-    </div>
-</div>
+            // คำนวณค่าแรงรายชั่วโมง (คิดที่ 240 ชม./เดือน)
+            const rate = base / 240;
 
-<script>
-    // ฐานข้อมูลวันหยุดไทย ปี 2569 (2026)
-    const holidays2026 = {
-        "01-01": "วันขึ้นปีใหม่",
-        "03-02": "วันมาฆบูชา",
-        "04-06": "วันจักรี",
-        "04-13": "วันสงกรานต์",
-        "04-14": "วันสงกรานต์",
-        "04-15": "วันสงกรานต์",
-        "05-01": "วันแรงงาน",
-        "05-04": "วันฉัตรมงคล",
-        "05-31": "วันวิสาขบูชา",
-        "06-03": "วันเฉลิมพระชนมพรรษาพระราชินี",
-        "07-28": "วันเฉลิมพระชนมพรรษา ร.10",
-        "07-29": "วันอาสาฬหบูชา",
-        "07-30": "วันเข้าพรรษา",
-        "08-12": "วันแม่แห่งชาติ",
-        "10-13": "วันคล้ายวันสวรรคต ร.9",
-        "10-23": "วันปิยมหาราช",
-        "12-05": "วันพ่อแห่งชาติ",
-        "12-10": "วันรัฐธรรมนูญ",
-        "12-31": "วันสิ้นปี"
-    };
+            // คำนวณเงิน OT แต่ละประเภท
+            const pay10 = h10 * rate * 1.0;
+            const pay15 = h15 * rate * 1.5;
+            const pay20 = h20 * rate * 2.0;
+            const pay30 = h30 * rate * 3.0;
 
-    const daysTh = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
-    const WORK_HOURS = 8.75;
-    const OT_HOURS = 2;
-    const DIVISOR = 8;
+            // รายรับรวมก่อนหัก
+            const totalIncome = base + bonus + pay10 + pay15 + pay20 + pay30;
 
-    document.getElementById('monthPicker').value = new Date().toISOString().substring(0, 7);
+            // รายการหัก
+            let sso = base * 0.05;
+            if (sso > 750) sso = 750;
 
-    function generateTable() {
-        const monthVal = document.getElementById('monthPicker').value;
-        const [year, month] = monthVal.split('-').map(Number);
-        const daysInMonth = new Date(year, month, 0).getDate();
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
-
-        for (let d = 1; d <= daysInMonth; d++) {
-            const dateObj = new Date(year, month - 1, d);
-            const dayIdx = dateObj.getDay();
-            const dateKey = `${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-            const holidayName = (year === 2026) ? holidays2026[dateKey] : null;
-
-            const tr = document.createElement('tr');
-            if (dayIdx === 0) tr.className = 'sunday';
-            if (dayIdx === 6) tr.className = 'saturday';
-            if (holidayName) tr.classList.add('is-holiday');
-
-            tr.innerHTML = `
-                <td>${d}</td>
-                <td>
-                    ${daysTh[dayIdx]}
-                    ${holidayName ? `<span class="holiday-name">${holidayName}</span>` : ''}
-                </td>
-                <td>
-                    <select class="table-select work-rate" onchange="calculateTotal(this)">
-                        <option value="0" selected>ปกติ</option>
-                        <option value="1">+1 แรง</option>
-                        <option value="1.5">+1.5 แรง</option>
-                        <option value="2">+2 แรง</option>
-                        <option value="3">+3 แรง</option>
-                    </select>
-                </td>
-                <td>
-                    <select class="table-select ot-rate" onchange="calculateTotal(this)">
-                        <option value="0" selected>0</option>
-                        <option value="1">1x</option>
-                        <option value="1.5">1.5x</option>
-                        <option value="2">2x</option>
-                        <option value="3">3x</option>
-                    </select>
-                </td>
-                <td class="row-extra">0</td>
-            `;
-            tbody.appendChild(tr);
-        }
-        calculateTotal();
-    }
-
-    function calculateTotal(el) {
-        if (el) {
-            el.classList.toggle('active', el.value !== "0");
-        }
-
-        const salary = parseFloat(document.getElementById('baseSalary').value) || 0;
-        const hourlyRate = (salary / 30) / DIVISOR;
-        const rows = document.querySelectorAll('#tableBody tr');
-        let totalExtra = 0;
-
-        rows.forEach(row => {
-            const wMult = parseFloat(row.querySelector('.work-rate').value);
-            const oMult = parseFloat(row.querySelector('.ot-rate').value);
-            const sum = (WORK_HOURS * hourlyRate * wMult) + (OT_HOURS * hourlyRate * oMult);
-            
-            const extraCell = row.querySelector('.row-extra');
-            if (sum > 0) {
-                extraCell.innerText = Math.round(sum).toLocaleString();
-                extraCell.classList.add('has-value');
-            } else {
-                extraCell.innerText = "0";
-                extraCell.classList.remove('has-value');
+            let tax = 0;
+            if (totalIncome > 25000) {
+                tax = (totalIncome - 25000) * 0.03; // ภาษีแบบเหมา 3% ส่วนที่เกิน 25k
             }
-            totalExtra += sum;
-        });
 
-        document.getElementById('displayExtra').innerText = "+ " + totalExtra.toLocaleString(undefined, {minimumFractionDigits: 2});
-        document.getElementById('grandTotal').innerText = (salary + totalExtra).toLocaleString(undefined, {minimumFractionDigits: 2});
-    }
+            // ยอดสุทธิ
+            const netSalary = totalIncome - sso - tax;
 
-    generateTable();
-</script>
+            // แสดงผล
+            const f = (n) => n.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
+            document.getElementById('resBase').innerText = f(base);
+            document.getElementById('res10').innerText = "+ " + f(pay10);
+            document.getElementById('res15').innerText = "+ " + f(pay15);
+            document.getElementById('res20').innerText = "+ " + f(pay20);
+            document.getElementById('res30').innerText = "+ " + f(pay30);
+            document.getElementById('resBonus').innerText = "+ " + f(bonus);
+            document.getElementById('resSSO').innerText = "- " + f(sso);
+            document.getElementById('resTax').innerText = "- " + f(tax);
+            document.getElementById('resNet').innerText = f(netSalary);
+        }
+    </script>
 </body>
 </html>
